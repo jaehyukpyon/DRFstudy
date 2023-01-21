@@ -1,0 +1,84 @@
+>>> from snippets.models import Snippet
+>>> from snippets.serializers import SnippetSerializer
+>>> from rest_framework.renderers import JSONRenderer
+>>> from rest_framework.parsers import JSONParser
+
+>>> snippet = Snippet(code='foo = "bar"\n')
+>>> snippet.save()
+
+>>> snippet = Snippet(code='print("hello, world")\n')
+>>> snippet.save()
+
+>>> snippet 
+<Snippet: Snippet object (2)>
+
+>>> serializer = SnippetSerializer(snippet)
+>>> serializer.data
+{'id': 2, 'title': '', 'code': 'print("hello, world")\n'}
+>>> type(serializer)
+<class 'snippets.serializers.SnippetSerializer'>
+>>> serializer.data
+{'id': 2, 'title': '', 'code': 'print("hello, world")\n'}
+>>> type(serializer.data)
+<class 'rest_framework.utils.serializer_helpers.ReturnDict'>
+>>> content = JSONRenderer().render(serializer.data)
+>>> content
+b'{"id":2,"title":"","code":"print(\\"hello, world\\")\\n"}'
+>>> type(content) 
+<class 'bytes'>
+>>>
+>>> 
+>>> 
+>>> 
+>>> 
+>>> 
+>>> import io
+>>> type(snippet)       
+<class 'snippets.models.Snippet'>
+>>> snippet.id
+2
+>>> snippet.pk
+2
+
+>>> content
+b'{"id":2,"title":"","code":"print(\\"hello, world\\")\\n"}'
+>>> stream = io.BytesIO(content)
+>>> type(stream)                    
+<class '_io.BytesIO'>
+
+>>> data = JSONParser().parse(stream)
+>>> data
+{'id': 2, 'title': '', 'code': 'print("hello, world")\n'}
+>>> type(data)
+<class 'dict'>
+
+>>> type(serializer)
+<class 'snippets.serializers.SnippetSerializer'>
+>>> type(serializer.data)
+<class 'rest_framework.utils.serializer_helpers.ReturnDict'>
+
+>>> serializer = SnippetSerializer(data=data)
+>>> serializer.is_valid()
+True
+>>> serializer.validated_data
+OrderedDict([('title', ''), ('code', 'print("hello, world")')])
+>>> type(serializer)
+<class 'snippets.serializers.SnippetSerializer'>
+
+>>> serializer.save()
+*** SnippetSerializer.create called.
+*** SnippetSerializer.create - type(validated_data) >  <class 'dict'>
+*** SnippetSerializer.create - validated_data >  {'title': '', 'code': 'print("hello, world")'}
+<Snippet: Snippet object (3)>
+>>> type(serializer)
+<class 'snippets.serializers.SnippetSerializer'>
+
+>>> new_snippet = serializer.save()
+### SnippetSerializer.update called.
+### SnippetSerializer.update - type(validated_data) >  <class 'dict'>
+### SnippetSerializer.update - validated_data >  {'title': '', 'code': 'print("hello, world")'}
+### SnippetSerializer.update - type(instance) >  <class 'snippets.models.Snippet'>
+### SnippetSerializer.update - instance >  Snippet object (3)
+>>> new_snippet
+<Snippet: Snippet object (3)>
+>>>

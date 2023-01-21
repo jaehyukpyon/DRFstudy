@@ -42,3 +42,22 @@ class SnippetSerializer(serializers.Serializer):
         instance.code = validated_data.get('code', instance.code)
         instance.save()
         return instance
+    
+    
+class SnippetSerializer2(serializers.ModelSerializer):
+    
+    """
+    It's important to remember that ModelSerializer classes don't do anything particularly magical, 
+    they are simply a shortcut for creating serializer classes:
+    1. An automatically determined set of fields.
+    2. Simple default implementations for the create() and update() methods.
+    """
+    
+    class Meta:
+        model = Snippet
+        fields = [
+            'id',
+            'title',
+            'code',
+            'created',
+        ]

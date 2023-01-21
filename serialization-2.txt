@@ -1,0 +1,23 @@
+SnippetSerializer2를 추가한 후...
+
+class SnippetSerializer2(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Snippet
+        fields = [
+            'id',
+            'title',
+            'code'
+        ]
+
+
+>>> from snippets.serializers import SnippetSerializer2
+>>> serializer = SnippetSerializer2()
+>>> print(repr(serializer))
+SnippetSerializer2():
+    id = IntegerField(label='ID', read_only=True)
+    title = CharField(allow_blank=True, max_length=100, required=False)
+    code = CharField(style={'base_template': 'textarea.html'})
+>>>
+
+만약 Meta에 

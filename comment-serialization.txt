@@ -1,0 +1,12 @@
+from snippets.models import Comment
+from snippets.serializers import CommentSerializer
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+
+AssertionError: When a serializer is passed a `data` keyword argument you must call `.is_valid()` before attempting to access the serialized `.data` representation.
+You should either call `.is_valid()` first, or access `.initial_data` instead.
+>> serializer.is_valid()를 먼저 호출해야 serializer.data를 호출할 수 있다.
+
+serializer = CommentSerializer(data={'email': 'jam82@naver.com', 'content': 'hello world', "created":"2016-01-27T15:17:10.375877"})
+serializer.is_valid() > False
+serializer.errors > {'email': [ErrorDetail(string='egg is not included in email.', code='invalid')], 'content': [ErrorDetail(string='django is not included in content.', code='invalid')]}

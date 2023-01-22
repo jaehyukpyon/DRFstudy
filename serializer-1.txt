@@ -1,0 +1,30 @@
+Serializers allow complex data such as querysets and model instances to be converted to native Python datatypes 
+that can then be easily rendered into JSON, XML or other content types. 
+Serializers also provide deserialization, allowing parsed data to be converted back into complex types, 
+after first validating the incoming data.
+
+Calling .save() will either create a new instance, or update an existing instance, depending on if an existing instance was passed when instantiating the serializer class:
+
+# .save() will create a new instance. 
+serializer = CommentSerializer(data=data) 
+
+# .save() will update the existing `comment` instance. 
+serializer = CommentSerializer(comment, data=data)
+
+
+
+Field-level validation =>
+class BlogPostSerializer(serializers.Serializer):
+    title = serializers.CharField(max_length=100)
+    content = serializers.CharField()
+
+    def validate_title(self, value):
+        """
+        Check that the blog post is about Django.
+        """
+        if 'django' not in value.lower():
+            raise serializers.ValidationError("Blog post is not about Django")
+        return value
+
+Note: If your <field_name> is declared on your serializer with the parameter `required=False` 
+then this validation step will not take place if the field is not included.

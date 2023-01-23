@@ -64,6 +64,7 @@ class BooksAPI(APIView):
             print('### type(result) > ', type(result))
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 
 class BookAPI(APIView):
@@ -72,12 +73,21 @@ class BookAPI(APIView):
         book = get_object_or_404(Book, bid=bid)
         serializer = BookSerializer(book)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    # def put(self, request):
+    #     print('### put method called.')
+    #     serializer = BookSerializer(data=request.data)
+    #     if serializer.is_valid():
+    #         result = serializer.save()
+    #         print('### type(result) > ', type(result))
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class BooksAPIMixins(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
-    generics.GenericAPIView
+    generics.GenericAPIView,
 ):
 
     queryset = Book.objects.all()
@@ -92,7 +102,9 @@ class BooksAPIMixins(
 
 class BookAPIMixins(
     mixins.RetrieveModelMixin,
-    generics.GenericAPIView
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    generics.GenericAPIView,
 ):
 
     queryset = Book.objects.all()
@@ -101,3 +113,12 @@ class BookAPIMixins(
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs) # mixins.RetrieveModelMixin과 연결
+    
+    def put(self, request, *args, **kwargs):
+        print('### put method called.')
+        for key, value in kwargs.items():
+            print(key, value) # bid 1
+        return self.update(request, *args, **kwargs) # mixins.UpdateModelMixin
+    
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs) # mixins.DestroyModelMixin

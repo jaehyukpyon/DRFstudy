@@ -1,0 +1,9 @@
+>>> from example.models import Book
+>>> book = Book(bid=200, title='200title', author='200author', category='200category', pages=200, price=200, published_date='2023-01-23', description='200description')
+>>> book.save() 
+
+>>> book.bid = 201
+>>> book.save() # 위에서 저장했던 200번의 bid가, 즉 pk가 201로 바뀌는 것이 아닌, 201번의 새로운 row가 저장된다.(추가 저장된다.)
+
+>>> book.title = '201title'
+>>> book.save() # 201번의 책 제목이 '201title'로 변경된다.

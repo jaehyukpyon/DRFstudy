@@ -1,12 +1,54 @@
+https://www.django-rest-framework.org/api-guide/serializers/#serializers
+
 from snippets.models import Comment
 from snippets.serializers import CommentSerializer
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 
+유효하지 않은 데이터에 대한 예외 발생
+.is_valid() 메서드는 유효성 검사 오류가 있는 경우 serializers.ValidationError 예외를 발생시키는 선택적 raise_exception 플래그를 사용합니다.
+이러한 예외는 REST 프레임워크가 제공하는 기본 예외 처리기에 의해 자동으로 처리되며 기본적으로 HTTP 400 잘못된 요청 응답을 반환합니다.
+>>> serializer.is_valid(raise_exception=True)
+
+
+
 AssertionError: When a serializer is passed a `data` keyword argument you must call `.is_valid()` before attempting to access the serialized `.data` representation.
 You should either call `.is_valid()` first, or access `.initial_data` instead.
 >> serializer.is_valid()를 먼저 호출해야 serializer.data를 호출할 수 있다.
 
+# email은 egg를 포함해야 하고, content를 django를 포함해야 할 때
 serializer = CommentSerializer(data={'email': 'jam82@naver.com', 'content': 'hello world', "created":"2016-01-27T15:17:10.375877"})
 serializer.is_valid() > False
 serializer.errors > {'email': [ErrorDetail(string='egg is not included in email.', code='invalid')], 'content': [ErrorDetail(string='django is not included in content.', code='invalid')]}
+
+
+>>> comment = Comment(email='leila@example.com', content='foo bar')
+>>> comment
+<snippets.models.Comment object at 0x00000217EFDFE9B0>
+>>> comment.created
+datetime.datetime(2023, 1, 22, 16, 25, 41, 678609)
+>>> serializer = CommentSerializer(comment)
+>>> serializer.data
+{'email': 'leila@example.com', 'content': 'foo bar', 'created': '2023-01-22T16:25:41.678609+09:00'}
+    Serialize를 할 때는 validate_xxx, validate 모두 호출되지 않는다.
+    또한, Serializer의 HiddenField는 serializer.data 및 JSONRenderer().render(serializer.data)의 결과값에 전혀 포함되지 않는다.
+
+
+
+mytext = serializers.HiddenField(
+        default='default mytext',
+    )
+이 경우에는 
+serializer = CommentSerializer(data={'email': 'eggjam82@naver.com', 'content': 'django manseoui!', "created":"2016-01-27T15:17:10.375877"})
+위와같이 mytext가 JSON에 포함 돼 있지 않더라도 에러가 발생하지 않는다.
+즉, serializer.is_valid()호출 시 True가 반환되며, validate_email, validate_content, validate_mytext, validate 메서드 순서대로 호출된다.
+>>> serializer.data
+{'email': 'eggjam82@naver.com', 'content': 'django manseoui!', 'created': '2016-01-27T15:17:10.375877+09:00'}
+
+주의: 만약 
+serializer = CommentSerializer(data={'email': 'eggjam82@naver.com', 'content': 'django manseoui!', "created":"2016-01-27T15:17:10.375877", 'mytext': 'typed text'})
+위와 같이 'mytext'가 넘어가더라도, default값으로 설정해준 값이 사용된다. 즉 'typed text'는 그냥 무시된다.
+>>> serializer.data
+{'email': 'eggjam82@naver.com', 'content': 'django manseoui!', 'created': '2016-01-27T15:17:10.375877+09:00'}
+
+mytext에 required=False가 추가로 설정 돼 있어도 위의 결과와 다를 게 없다.

@@ -1,0 +1,5 @@
+ModelSerializer
+Often you'll want serializer classes that map closely to Django model definitions.
+The ModelSerializer class provides a shortcut that lets you automatically create a Serializer class with fields that correspond to the Model fields.
+
+Please keep in mind that, if the field has already been explicitly declared on the serializer class, then the `extra_kwargs` option will be ignored.

@@ -14,7 +14,8 @@ class Snippet(models.Model):
 
 
 class Comment:
-    def __init__(self, email, content, created=None):
+    def __init__(self, email, content=None, created=None, mytext=None):
         self.email = email
         self.content = content
         self.created = created or datetime.now()
+        # self.mytext = mytext or 'Comment의 init메서드 안에서 생성된 mytext'

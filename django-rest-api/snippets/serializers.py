@@ -68,13 +68,15 @@ class CommentSerializer(serializers.Serializer):
     # serializers.errors > {'email': [ErrorDetail(string='Enter a valid email address.', code='invalid')]}
     content = serializers.CharField(max_length=200)
     created = serializers.DateTimeField()   
-    mydate = serializers.HiddenField(
-        default=datetime.now(),
+    mytext = serializers.HiddenField(
+        default='default mytext',
+        required=False,
     )
+    testcontent = serializers.CharField(max_length=200, read_only=True)
     
     def validate_email(self, value): # is_valid() 호출 시 이 메서드가 호출됨. validate 메서드보다 먼저 호출
-        print('CommentSerializer - validated_email, type(value) > ', type(value)) # str
-        print('CommentSerializer - validated_email, value > ', value) # 이메일 그 값 자체
+        print('CommentSerializer - validate_email, type(value) > ', type(value)) # str
+        print('CommentSerializer - validate_email, value > ', value) # 이메일 그 값 자체
         
         if 'egg' not in value.lower():
             raise serializers.ValidationError('egg is not included in email.')
@@ -88,15 +90,16 @@ class CommentSerializer(serializers.Serializer):
             raise serializers.ValidationError('django is not included in content.')
         return value
     
-    def validate_mydate(self, value):
-        print('CommentSerializer - validate_mydate, type(value) > ', type(value)) 
-        print('CommentSerializer - validate_mydate, value > ', value) # content값 그 자체
+    def validate_mytext(self, value):
+        print('CommentSerializer - validate_mytext, type(value) > ', type(value)) 
+        print('CommentSerializer - validate_mytext, value > ', value) # 무조건 default로 설정된 값이 출력
+        return value
     
     def validate(self, data): # is_valid() 호출 시 이 메서드가 호출됨. validated_xxx보다 나중에 호출
         print('CommentSerializer - validate called...')
         print("data['email'] > ", data['email'])
         print("data['content'] > ", data['content'])
         print("data['created'] > ", data['created'])
-        print('data > ', data) # OrderedDict
+        print('data > ', data) # OrderedDict 여기 data(OrderedDict에는 HiddenField로 선언된 필드가 포함 돼 있다. 만약 default 값이 있으면 그 값이다. 사용자가 입력한 값이 아님)
         return data # 반드시 validated 된 data를 return 해야 한다.
                

@@ -1,0 +1,8 @@
+num1 = 10
+assert num1 == 10, (
+    'printed'
+) # 이 경우 'printed' 출력 X
+
+assert num1 != 10, (
+    'printed'
+) # 이 경우 출력 O

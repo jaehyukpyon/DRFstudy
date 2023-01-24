@@ -8,3 +8,6 @@ serializers.BooleanField(required=False, default=True)
 
 serializers.BooleanField(required=False)
 사용자가 값을 안 보내도 validate_xxx가 실행되고 validate 메서드에 그 필드 정보가 나온다. 
+
+required=False
+만약 Model에서 blank=True를 설정했거나 default를 설정했거나 null=True를 설정했으면 serializer의 required는 False가 된다. 

@@ -55,5 +55,12 @@ class TodoAPIView(APIView):
         serializer = TodoDetailSerializer(todo) # 만약 many=True를 설정했으나, 만약 첫 번째 인자로 넘기는 값이 iterable하지 않다면 에러 발생
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+    def put(self, request, pk):
+        # title만 보내도 정상 작동.
+        todo = get_object_or_404(Todo, id=pk)
+        serializer = TodoCreateSerializer(todo, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-

@@ -7,7 +7,11 @@ from rest_framework import generics
 from rest_framework.generics import get_object_or_404
 
 from .models import Todo
-from .serializers import TodoSimpleSerializer, TodoDetailSerializer
+from .serializers import (
+    TodoSimpleSerializer, 
+    TodoDetailSerializer, 
+    TodoCreateSerializer,
+)
 
 # Create your views here.
 
@@ -17,6 +21,14 @@ class TodosAPIView(APIView):
         todos = Todo.objects.filter(complete=False)
         serializer = TodoSimpleSerializer(todos, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request):
+        serializer = TodoCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            print(f'$$$ {serializer.data}') # $$$ {'title': 'DRF공부하기', 'description': '책 보며 DRF 공부하기', 'important': False}
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
 class TodosAPIMixinView(
@@ -42,3 +54,6 @@ class TodoAPIView(APIView):
         print('### todo.description > ', todo.description)
         serializer = TodoDetailSerializer(todo) # 만약 many=True를 설정했으나, 만약 첫 번째 인자로 넘기는 값이 iterable하지 않다면 에러 발생
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    
+

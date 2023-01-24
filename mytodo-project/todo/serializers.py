@@ -16,6 +16,14 @@ class TodoSimpleSerializer(serializers.ModelSerializer):
 
 class TodoDetailSerializer(serializers.ModelSerializer):
     
+    comment_count = serializers.SerializerMethodField()
+    def get_comment_count(self, obj):
+        # 이 메서드는 post나 put deserialization의 validation할 때 끼어들지 않는다.
+        # 또한, validate_xxx및 validate 메서드가 다 호출 된 이후 가장 마지막에 호출된다. 
+        print('$$$ type(obj) >> ', type(obj)) # type(obj) >>  <class 'todo.models.Todo'>
+        # obj.description = '여기서 수정해 봅니다. 바뀝니까?' 여기서 수정해도 안 바뀐다.
+        return 'Hello World!'
+    
     def validate_id(self, value):
         print('### TodoDetailSerializer - validate_id called.')
         print('### TodoDetailSerializer - validate_id, value > ', value)
@@ -27,7 +35,7 @@ class TodoDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Todo
-        fields = ('id', 'title', 'description', 'created', 'complete', 'important')
+        fields = ('id', 'title', 'description', 'created', 'complete', 'important', 'comment_count')
         
 # TodoDetailSerializer():
 #     id = IntegerField(label='ID', read_only=True)
@@ -48,8 +56,8 @@ class TodoCreateSerializer(serializers.ModelSerializer):
         return 'Hello World!'
     
     # important = serializers.BooleanField(required=False, default=True) # important = BooleanField(default=True, required=False) 
-    #important = serializers.BooleanField(allow_null=True, required=False) # important = BooleanField(allow_null=True, required=False) 이렇게 설정해줘도 post시 사용자가 값을 안 보내도 validate_important실행되고, validate 메서드 안에 important정보가 포함된다.
-    important = serializers.BooleanField(required=False)
+    # important = serializers.BooleanField(allow_null=True, required=False) # important = BooleanField(allow_null=True, required=False) 이렇게 설정해줘도 post시 사용자가 값을 안 보내도 validate_important실행되고, validate 메서드 안에 important정보가 포함된다.
+    # important = serializers.BooleanField(required=False)
     def validate_important(self, value): # POSt 요청 시 important를 body에 포함하지 않아도 무조건 호출된다. 값은 False
         print('### TodoCreateSerializer - validate_important called.')
         print('### TodoCreateSerializer - validate_important, value > ', value)
@@ -83,6 +91,7 @@ class TodoCreateSerializer(serializers.ModelSerializer):
                 {
                     'required': False,
                     'allow_null': True,
+                    'default': True, # default값을 True를 주면 사용자가 값을 안 보내면 True값으로 자동으로 설정되고, validate_important호출 및 validate 메서드에서 important의 값이 True로 나타난다.
                 },
         }
         # fields = '__all__' # 이런식으로 하면, comment_count도 추가적으로 포함 된다. comment_count = SerializerMethodField()
